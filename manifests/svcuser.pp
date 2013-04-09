@@ -31,6 +31,6 @@ define svcutils::svcuser(
     system  => true,
     gid     => $manage_group,
     home    => $manage_home,
-    shell   => '/bin/nologin',
+    shell   => '/bin/bash',
   }
 }

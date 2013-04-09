@@ -16,7 +16,7 @@
 define svcutils::utils::upconf(
   $ensure      = 'present',
   $file        = '',
-  $template    = 'mixsvc/upconf.conf.erb',
+  $template    = 'svcutils/upconf.conf.erb',
   $user,
   $description,
   $respawn,

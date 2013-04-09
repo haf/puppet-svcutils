@@ -1,7 +1,7 @@
 define svcutils::utils::initvconf(
   $enable       = 'present',
   $file         = '',
-  $template     = 'riemann/initv.conf.erb',
+  $template     = 'svcutils/initv.conf.erb',
   $user         = undef,
   $description  = undef,
   $extra_script = undef,
