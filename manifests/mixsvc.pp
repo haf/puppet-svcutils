@@ -54,8 +54,8 @@ define svcutils::mixsvc(
         file        => $config_file,
         template    => $config_file_template,
         home        => $home,
+        require     => Package['daemonize'],
       }
-      Service[$title] { require +> Package['daemonize'] }
     }
     default: {
       err("$::operatingsystem not supported")
