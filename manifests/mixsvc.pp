@@ -71,16 +71,6 @@ define svcutils::mixsvc(
     }
   }
 
-  if ! defined(User[$manage_user]) {
-    user { $manage_user:
-      ensure  => present,
-      system  => true,
-      gid     => $group,
-      home    => $home,
-      shell   => '/bin/nologin',
-    }
-  }
-
   service { $title:
     ensure     => $ensure,
     enable     => true,
