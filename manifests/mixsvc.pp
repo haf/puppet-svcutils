@@ -12,13 +12,14 @@ define svcutils::mixsvc(
   $enable               = true,
   $config_file          = undef,
   $config_file_template = undef,
-  $user                 = '',
-  $group                = '',
+  $user                 = undef,
+  $group                = undef,
   $home                 = undef,
   $respawn              = true,
+  $stopsignal           = 'INT',
+  $environment          = undef,
   $log_dir,
   $exec,
-  $args,
   $description
 ) {
   $service_provider = $::osfamily ? {
@@ -33,33 +34,16 @@ define svcutils::mixsvc(
     default => $name,
   }
 
-  case $::osfamily {
-    'Debian': {
-      svcutils::utils::upconf { $title:
-        user        => $manage_user,
-        description => $description,
-        exec        => $exec,
-        args        => $args,
-        file        => $config_file,
-        template    => $config_file_template,
-        respawn     => $respawn,
-      }
-    }
-    'RedHat', 'Linux': {
-      svcutils::utils::initvconf { $title:
-        user        => $manage_user,
-        description => $description,
-        exec        => $exec,
-        args        => $args,
-        file        => $config_file,
-        template    => $config_file_template,
-        home        => $home,
-        require     => Package['daemonize'],
-      }
-    }
-    default: {
-      err("$::operatingsystem not supported")
-    }
+  supervisor::service { $title:
+    ensure      => present,
+    enable      => $enable,
+    command     => "$exec",
+    user        => $user,
+    group       => $group,
+    directory   => $home,
+    stopsignal  => $stopsignal,
+    environment => $environment,
+    redirect_stderr => true,
   }
 
   if ! defined(File[$log_dir]) {
@@ -69,14 +53,5 @@ define svcutils::mixsvc(
       owner  => 'root',
       group  => 'root',
     }
-  }
-
-  service { $title:
-    ensure     => $ensure,
-    enable     => true,
-    hasstatus  => true,
-    hasrestart => true,
-    provider   => $service_provider,
-    require    => File["/etc/init.d/$title"],
   }
 }
