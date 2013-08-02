@@ -1,36 +1,45 @@
 define svcutils::svcuser(
-  $home = undef,
+  $ensure = 'present',
+  $home   = undef,
+  $shell  = '/sbin/nologin',
   $group
 ) {
-  $manage_user = $name ? {
+  $_name = $name ? {
     ''      => $title,
     undef   => $title,
     default => $name,
   }
-  $manage_group = $group ? {
+  $_group = $group ? {
     ''      => $title,
     undef   => $title,
     default => $group,
   }
-  $manage_home = $home ? {
+  $_home = $home ? {
     ''      => "/home/$title",
     undef   => "/home/$title",
     default => $home,
   }
 
+  if $ensure == 'present' {
+    user { $_name:
+      ensure  => present,
+      system  => true,
+      gid     => $_group,
+      home    => $_home,
+      shell   => $shell,
+    }
+    if $_home != undef {
+      file { $_home:
+        ensure => directory,
+        owner  => $_name,
+        group  => $_group,
+      }
+    }
+  } else {
+    user { $_name:
+      ensure => 'absent',
+    }
+  }
+
   Group <| title == $group |>
-
-  file { $manage_home:
-    ensure => directory,
-    owner  => $manage_user,
-    group  => $manage_group,
-  }
-
-  user { $manage_user:
-    ensure  => present,
-    system  => true,
-    gid     => $manage_group,
-    home    => $manage_home,
-    shell   => '/bin/bash',
-  }
 }
