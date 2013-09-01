@@ -1,7 +1,7 @@
 define svcutils::svcuser(
   $ensure = 'present',
   $home   = undef,
-  $shell  = '/sbin/nologin',
+  $shell  = '/bin/bash',
   $group
 ) {
   $_name = $name ? {
